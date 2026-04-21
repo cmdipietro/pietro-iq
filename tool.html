@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pietro IQ — Forecast Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #FAFAF8;
+      --surface: #F4F2EE;
+      --surface2: #EDEAE4;
+      --border: #E0DDD6;
+      --red: #D93025;
+      --red2: #E8453A;
+      --coral: #FF6B4A;
+      --coral2: #FF8B6E;
+      --text: #1A1A1A;
+      --muted: #6B6560;
+      --dim: #C4BFB8;
+      --white: #FFFFFF;
+      --green: #1E8A4C;
+      --green-bg: #E8F5EE;
+      --amber: #B45309;
+      --amber-bg: #FEF3C7;
+      --google-blue: #4285F4;
+      --meta-blue: #1877F2;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Nav */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: 'Changa One', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--red); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link:hover { color: var(--red); }
+
+    .nav-badge {
+      padding: 6px 14px;
+      background: var(--red);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      text-decoration: none;
+    }
+
+    /* Main layout */
+    .app {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* Left panel - inputs */
+    .panel-inputs {
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      height: calc(100vh - 60px);
+      position: sticky;
+      top: 60px;
+    }
+
+    .panel-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+    }
+
+    .panel-title {
+      font-family: 'Changa One', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.03em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .panel-body {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Input groups */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .group-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    .field input,
+    .field select {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(217,48,37,0.08);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .optional-tag {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin-left: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Channel toggle */
+    .channel-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .channel-btn {
+      padding: 10px 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .channel-btn.active {
+      border-color: var(--red);
+      background: rgba(217,48,37,0.06);
+      color: var(--red);
+    }
+
+    .channel-btn:hover:not(.active) {
+      border-color: var(--coral);
+      color: var(--coral);
+    }
+
+    /* Generate button */
+    .btn-generate {
+      width: 100%;
+      padding: 16px;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      font-family: 'Changa One', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .btn-generate:hover {
+      background: var(--red2);
+      transform: translateY(-1px);
+    }
+
+    .btn-generate:active { transform: translateY(0); }
+
+    .btn-reset {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    /* Right panel - results */
+    .panel-results {
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .empty-icon {
+      font-size: 56px;
+      opacity: 0.3;
+    }
+
+    .empty-title {
+      font-family: 'Changa One', sans-serif;
+      font-size: 24px;
+      letter-spacing: 0.03em;
+      color: var(--text);
+      opacity: 0.5;
+    }
+
+    .empty-desc {
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 300px;
+      line-height: 1.7;
+    }
+
+    /* Results */
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+
+    .results-title {
+      font-family: 'Changa One', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.03em;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .results-title span { color: var(--red); }
+
+    .results-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .btn-export {
+      padding: 10px 20px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-export:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* Summary cards */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .summary-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .summary-card.red::before { background: var(--red); }
+    .summary-card.coral::before { background: var(--coral); }
+    .summary-card.green::before { background: var(--green); }
+    .summary-card.amber::before { background: #F59E0B; }
+
+    .summary-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .summary-value {
+      font-family: 'Changa One', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .summary-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Section headers */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      margin-top: 32px;
+    }
+
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .section-icon.google { background: rgba(66,133,244,0.1); }
+    .section-icon.meta { background: rgba(24,119,242,0.1); }
+    .section-icon.combined { background: rgba(217,48,37,0.1); }
+    .section-icon.gap { background: rgba(255,107,74,0.1); }
+
+    .section-title-sm {
+      font-family: 'Changa One', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.03em;
+      color: var(--text);
+    }
+
+    .section-title-sm span { color: var(--red); }
+
+    /* Forecast table */
+    .forecast-table {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .forecast-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .forecast-table th {
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-align: left;
+    }
+
+    .forecast-table th.google-header { background: var(--google-blue); }
+    .forecast-table th.meta-header { background: var(--meta-blue); }
+    .forecast-table th.combined-header { background: var(--red); }
+    .forecast-table th.scenario { text-align: center; }
+
+    .forecast-table td {
+      padding: 11px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .forecast-table tr:last-child td { border-bottom: none; }
+    .forecast-table tr:nth-child(even) td { background: var(--bg); }
+
+    .forecast-table td.metric { font-weight: 700; color: var(--text); }
+    .forecast-table td.low { text-align: center; color: var(--muted); }
+    .forecast-table td.mid { text-align: center; font-weight: 700; color: var(--text); }
+    .forecast-table td.high { text-align: center; color: var(--green); font-weight: 600; }
+
+    .scenario-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge-low { background: var(--surface2); color: var(--muted); }
+    .badge-mid { background: rgba(217,48,37,0.1); color: var(--red); }
+    .badge-high { background: var(--green-bg); color: var(--green); }
+
+    /* Gap analysis */
+    .gap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .gap-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .gap-metric {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .gap-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .gap-label { color: var(--muted); }
+    .gap-value { font-weight: 700; color: var(--text); }
+
+    .gap-bar-wrap {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .gap-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    .gap-bar.good { background: var(--green); }
+    .gap-bar.warn { background: #F59E0B; }
+    .gap-bar.poor { background: var(--red); }
+
+    .gap-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 8px;
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+
+    .gap-status.above { background: var(--green-bg); color: var(--green); }
+    .gap-status.below { background: var(--amber-bg); color: var(--amber); }
+    .gap-status.na { background: var(--surface2); color: var(--muted); }
+
+    /* Recommendations */
+    .rec-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rec-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transition: border-color 0.2s ease;
+    }
+
+    .rec-card:hover { border-color: var(--coral); }
+
+    .rec-priority {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .rec-priority.high { background: rgba(217,48,37,0.1); color: var(--red); }
+    .rec-priority.med { background: var(--amber-bg); color: var(--amber); }
+    .rec-priority.low { background: var(--green-bg); color: var(--green); }
+
+    .rec-content h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .rec-content p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .rec-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--surface);
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 16px;
+    }
+
+    .loading.visible { display: flex; }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .panel-inputs { position: static; height: auto; }
+      .panel-results { padding: 24px; }
+      .summary-cards { grid-template-columns: repeat(2, 1fr); }
+      .gap-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a href="index.html" class="nav-logo">Pietro<span>IQ</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="index.html#early-access" class="nav-badge">Get Early Access</a>
+    </div>
+  </nav>
+
+  <!-- App -->
+  <div class="app">
+
+    <!-- Left Panel: Inputs -->
+    <div class="panel-inputs">
+      <div class="panel-header">
+        <h2 class="panel-title">Build Your Forecast</h2>
+        <p class="panel-subtitle">Fill in the fields below and click Generate</p>
+      </div>
+      <div class="panel-body">
+
+        <!-- Section 1: Account Context -->
+        <div class="input-group">
+          <p class="group-label">Account Context</p>
+
+          <div class="field">
+            <label>Advertiser Type</label>
+            <select id="advertiserType">
+              <option value="">Select type...</option>
+              <option value="new">New Advertiser (0–6 months)</option>
+              <option value="growing">Growing (6–18 months)</option>
+              <option value="established">Established (18+ months)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Industry Vertical</label>
+            <select id="vertical">
+              <option value="">Select vertical...</option>
+              <option value="ecommerce">Ecommerce / DTC</option>
+              <option value="health">Health & Wellness</option>
+              <option value="retail">Retail</option>
+              <option value="finance">Finance / Insurance</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Business Objective</label>
+            <select id="objective">
+              <option value="">Select objective...</option>
+              <option value="conversions">Ecommerce Sales / Conversions</option>
+              <option value="leads">Lead Generation</option>
+              <option value="awareness">Brand Awareness</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 2: Budget -->
+        <div class="input-group">
+          <p class="group-label">Budget & Channels</p>
+
+          <div class="field">
+            <label>Channel</label>
+            <div class="channel-toggle">
+              <button class="channel-btn active" onclick="setChannel('both', this)">Both</button>
+              <button class="channel-btn" onclick="setChannel('google', this)">Google Only</button>
+              <button class="channel-btn" onclick="setChannel('meta', this)">Meta Only</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Total Monthly Budget ($)</label>
+            <input type="number" id="totalBudget" placeholder="e.g. 10000" min="0"/>
+          </div>
+
+          <div class="field-row" id="splitRow">
+            <div class="field">
+              <label>Google Split (%)</label>
+              <input type="number" id="googleSplit" placeholder="e.g. 60" min="0" max="100" value="60"/>
+            </div>
+            <div class="field">
+              <label>Meta Split (%)</label>
+              <input type="number" id="metaSplit" placeholder="e.g. 40" min="0" max="100" value="40"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Avg Order / Lead Value ($)</label>
+            <input type="number" id="orderValue" placeholder="e.g. 85" min="0"/>
+            <span class="field-hint">Used to calculate estimated ROAS and revenue</span>
+          </div>
+        </div>
+
+        <!-- Section 3: Your Data (optional) -->
+        <div class="input-group">
+          <p class="group-label">Your Current Data <span class="optional-tag">Optional</span></p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Your CTR (%)</label>
+              <input type="number" id="yourCTR" placeholder="e.g. 3.5" step="0.1" min="0"/>
+            </div>
+            <div class="field">
+              <label>Your CPC ($)</label>
+              <input type="number" id="yourCPC" placeholder="e.g. 1.25" step="0.01" min="0"/>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Your CVR (%)</label>
+              <input type="number" id="yourCVR" placeholder="e.g. 2.8" step="0.1" min="0"/>
+            </div>
+            <div class="field">
+              <label>Your CPA ($)</label>
+              <input type="number" id="yourCPA" placeholder="e.g. 45" step="0.01" min="0"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Your ROAS (x)</label>
+            <input type="number" id="yourROAS" placeholder="e.g. 3.2" step="0.1" min="0"/>
+          </div>
+        </div>
+
+        <!-- Generate -->
+        <button class="btn-generate" onclick="generateForecast()">⚡ Generate Forecast</button>
+        <button class="btn-reset" onclick="resetForm()">Reset</button>
+
+      </div>
+    </div>
+
+    <!-- Right Panel: Results -->
+    <div class="panel-results">
+
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">📊</div>
+        <h3 class="empty-title">Your Forecast Will Appear Here</h3>
+        <p class="empty-desc">Fill in your budget, vertical, and channel on the left — then click Generate Forecast to see your results.</p>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading" id="loadingState">
+        <div class="spinner"></div>
+        <p class="loading-text">Calculating your forecast...</p>
+      </div>
+
+      <!-- Results -->
+      <div class="results" id="resultsState">
+
+        <!-- Header -->
+        <div class="results-header">
+          <div>
+            <h2 class="results-title">Your <span>Forecast</span></h2>
+            <p class="results-meta" id="resultsMeta"></p>
+          </div>
+          <button class="btn-export" onclick="window.print()">⬇ Export</button>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="summary-cards">
+          <div class="summary-card red">
+            <div class="summary-label">Total Budget</div>
+            <div class="summary-value" id="sumBudget">—</div>
+            <div class="summary-sub">Per month</div>
+          </div>
+          <div class="summary-card coral">
+            <div class="summary-label">Est. Clicks (Mid)</div>
+            <div class="summary-value" id="sumClicks">—</div>
+            <div class="summary-sub">Combined channels</div>
+          </div>
+          <div class="summary-card green">
+            <div class="summary-label">Est. Conversions (Mid)</div>
+            <div class="summary-value" id="sumConversions">—</div>
+            <div class="summary-sub">Combined channels</div>
+          </div>
+          <div class="summary-card amber">
+            <div class="summary-label">Est. CPA (Mid)</div>
+            <div class="summary-value" id="sumCPA">—</div>
+            <div class="summary-sub">Blended average</div>
+          </div>
+        </div>
+
+        <!-- Google Ads Forecast -->
+        <div id="googleSection">
+          <div class="section-header">
+            <div class="section-icon google">🔵</div>
+            <h3 class="section-title-sm">Google Ads <span>Forecast</span></h3>
+          </div>
+          <div class="forecast-table">
+            <table>
+              <thead>
+                <tr>
+                  <th class="google-header">Metric</th>
+                  <th class="google-header scenario"><span class="scenario-badge badge-low">Low</span></th>
+                  <th class="google-header scenario"><span class="scenario-badge badge-mid">Mid</span></th>
+                  <th class="google-header scenario"><span class="scenario-badge badge-high">High</span></th>
+                </tr>
+              </thead>
+              <tbody id="googleTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Meta Ads Forecast -->
+        <div id="metaSection">
+          <div class="section-header">
+            <div class="section-icon meta">🔷</div>
+            <h3 class="section-title-sm">Meta Ads <span>Forecast</span></h3>
+          </div>
+          <div class="forecast-table">
+            <table>
+              <thead>
+                <tr>
+                  <th class="meta-header">Metric</th>
+                  <th class="meta-header scenario"><span class="scenario-badge badge-low">Low</span></th>
+                  <th class="meta-header scenario"><span class="scenario-badge badge-mid">Mid</span></th>
+                  <th class="meta-header scenario"><span class="scenario-badge badge-high">High</span></th>
+                </tr>
+              </thead>
+              <tbody id="metaTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Combined -->
+        <div id="combinedSection">
+          <div class="section-header">
+            <div class="section-icon combined">🔴</div>
+            <h3 class="section-title-sm">Combined <span>View</span></h3>
+          </div>
+          <div class="forecast-table">
+            <table>
+              <thead>
+                <tr>
+                  <th class="combined-header">Metric</th>
+                  <th class="combined-header scenario"><span class="scenario-badge badge-low">Low</span></th>
+                  <th class="combined-header scenario"><span class="scenario-badge badge-mid">Mid</span></th>
+                  <th class="combined-header scenario"><span class="scenario-badge badge-high">High</span></th>
+                </tr>
+              </thead>
+              <tbody id="combinedTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Gap Analysis -->
+        <div id="gapSection">
+          <div class="section-header">
+            <div class="section-icon gap">🎯</div>
+            <h3 class="section-title-sm">Gap <span>Analysis</span></h3>
+          </div>
+          <div class="gap-grid" id="gapGrid"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Recommendations -->
+        <div id="recsSection">
+          <div class="section-header">
+            <div class="section-icon gap">💡</div>
+            <h3 class="section-title-sm">Recommendations</h3>
+          </div>
+          <div class="rec-list" id="recsList"></div>
+        </div>
+
+        <!-- Footer note -->
+        <div style="margin-top:32px;padding:16px;background:var(--surface);border-radius:6px;font-size:11px;color:var(--muted);line-height:1.7;">
+          <strong style="color:var(--text);">Data sources:</strong> WordStream 2024, Revealbot 2024, Databox 2024.
+          Benchmarks represent industry averages — actual performance may vary based on creative quality, targeting, landing page experience, and market conditions.
+          Low / Mid / High scenarios represent the 25th, 50th, and 75th percentile of performance within your vertical.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── Benchmark Data ───────────────────────────────────────────
+    const benchmarks = {
+      ecommerce: {
+        google: { ctr: [1.8, 2.7, 4.1], cpc: [0.80, 1.16, 1.90], cvr: [1.5, 2.8, 4.2], cpa: [25, 45, 80], roas: [2.0, 3.5, 5.5], cpm: [3, 5, 8] },
+        meta:   { ctr: [0.8, 1.2, 2.0], cpc: [0.60, 0.94, 1.50], cvr: [1.0, 1.85, 3.2], cpa: [22, 38, 65], roas: [2.0, 3.2, 5.0], cpm: [8, 12, 18] }
+      },
+      health: {
+        google: { ctr: [2.1, 3.2, 4.8], cpc: [1.50, 2.62, 4.00], cvr: [1.8, 3.4, 5.5], cpa: [35, 65, 110], roas: [1.5, 2.8, 4.5], cpm: [4, 7, 11] },
+        meta:   { ctr: [0.9, 1.4, 2.2], cpc: [0.80, 1.20, 2.00], cvr: [0.8, 1.5, 2.8], cpa: [35, 68, 115], roas: [1.5, 2.5, 4.0], cpm: [9, 14, 20] }
+      },
+      retail: {
+        google: { ctr: [2.0, 3.0, 4.5], cpc: [0.90, 1.35, 2.20], cvr: [2.0, 3.5, 5.5], cpa: [20, 38, 65], roas: [2.5, 4.2, 6.5], cpm: [3, 5, 8] },
+        meta:   { ctr: [0.7, 1.1, 1.8], cpc: [0.65, 1.00, 1.65], cvr: [0.9, 1.7, 3.0], cpa: [22, 40, 70], roas: [2.0, 3.5, 5.5], cpm: [8, 13, 19] }
+      },
+      finance: {
+        google: { ctr: [2.5, 3.8, 5.5], cpc: [2.50, 4.22, 7.00], cvr: [3.5, 5.1, 7.5], cpa: [50, 95, 160], roas: [1.5, 2.5, 4.0], cpm: [6, 10, 15] },
+        meta:   { ctr: [1.0, 1.6, 2.5], cpc: [1.20, 1.85, 3.00], cvr: [1.5, 2.8, 4.5], cpa: [45, 85, 145], roas: [1.2, 2.0, 3.2], cpm: [10, 16, 24] }
+      }
+    };
+
+    // ─── Channel state ────────────────────────────────────────────
+    let selectedChannel = 'both';
+
+    function setChannel(channel, btn) {
+      selectedChannel = channel;
+      document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('splitRow').style.display = channel === 'both' ? 'grid' : 'none';
+    }
+
+    // ─── Format helpers ───────────────────────────────────────────
+    const fmt = {
+      currency: v => v >= 1000 ? '$' + (v/1000).toFixed(1) + 'k' : '$' + v.toFixed(0),
+      percent:  v => v.toFixed(1) + '%',
+      number:   v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : Math.round(v).toLocaleString(),
+      roas:     v => v.toFixed(1) + 'x',
+    };
+
+    // ─── Forecast calculation ─────────────────────────────────────
+    function calcChannel(budget, bench) {
+      const scenarios = ['low', 'mid', 'high'];
+      return scenarios.map((s, i) => {
+        const clicks = budget / bench.cpc[i];
+        const conversions = clicks * (bench.cvr[i] / 100);
+        const cpa = conversions > 0 ? budget / conversions : 0;
+        const orderVal = parseFloat(document.getElementById('orderValue').value) || 0;
+        const revenue = conversions * orderVal;
+        const roas = budget > 0 && revenue > 0 ? revenue / budget : bench.roas[i];
+        return { clicks, conversions, cpa, revenue, roas, cpm: bench.cpm[i], ctr: bench.ctr[i], cpc: bench.cpc[i], cvr: bench.cvr[i] };
+      });
+    }
+
+    // ─── Build table rows ─────────────────────────────────────────
+    function buildTableRows(results, budget) {
+      const rows = [
+        ['Budget', results.map(() => fmt.currency(budget))],
+        ['CTR', results.map(r => fmt.percent(r.ctr))],
+        ['CPC', results.map(r => fmt.currency(r.cpc))],
+        ['Est. Clicks', results.map(r => fmt.number(r.clicks))],
+        ['CVR', results.map(r => fmt.percent(r.cvr))],
+        ['Est. Conversions', results.map(r => fmt.number(r.conversions))],
+        ['Est. CPA', results.map(r => fmt.currency(r.cpa))],
+        ['Est. ROAS', results.map(r => fmt.roas(r.roas))],
+        ['CPM', results.map(r => fmt.currency(r.cpm))],
+      ];
+
+      return rows.map(([label, vals]) => `
+        <tr>
+          <td class="metric">${label}</td>
+          <td class="low">${vals[0]}</td>
+          <td class="mid">${vals[1]}</td>
+          <td class="high">${vals[2]}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ─── Gap analysis ─────────────────────────────────────────────
+    function buildGapCard(label, yourVal, benchMid, format, higherIsBetter) {
+      if (!yourVal) return `
+        <div class="gap-card">
+          <div class="gap-metric">${label}</div>
+          <div class="gap-row"><span class="gap-label">Your data</span><span class="gap-value">Not provided</span></div>
+          <div class="gap-row"><span class="gap-label">Benchmark (Mid)</span><span class="gap-value">${format(benchMid)}</span></div>
+          <span class="gap-status na">— No data</span>
+        </div>`;
+
+      const ratio = yourVal / benchMid;
+      const isAbove = higherIsBetter ? ratio >= 1 : ratio <= 1;
+      const pct = Math.min(Math.round(ratio * 100), 150);
+      const barClass = isAbove ? 'good' : ratio > 0.7 ? 'warn' : 'poor';
+
+      return `
+        <div class="gap-card">
+          <div class="gap-metric">${label}</div>
+          <div class="gap-row"><span class="gap-label">Your data</span><span class="gap-value">${format(yourVal)}</span></div>
+          <div class="gap-row"><span class="gap-label">Benchmark (Mid)</span><span class="gap-value">${format(benchMid)}</span></div>
+          <div class="gap-bar-wrap"><div class="gap-bar ${barClass}" style="width:${Math.min(pct,100)}%"></div></div>
+          <span class="gap-status ${isAbove ? 'above' : 'below'}">${isAbove ? '✓ Above Benchmark' : '⚠ Below Benchmark'}</span>
+        </div>`;
+    }
+
+    // ─── Recommendations ──────────────────────────────────────────
+    function buildRecs(vertical, channel, yourCTR, yourCPC, yourCVR, yourCPA, bench) {
+      const recs = [];
+
+      if (!yourCTR || yourCTR < bench.ctr[1]) recs.push({ priority: 'high', tag: 'Creative', title: 'Improve your ad copy & headlines', desc: 'Your CTR is below benchmark. Test new headlines, stronger CTAs, and more specific value propositions to improve click-through rates.' });
+      if (!yourCPC || yourCPC > bench.cpc[1]) recs.push({ priority: 'high', tag: 'Bidding', title: 'Review your bidding strategy', desc: 'Your CPC is above benchmark. Consider tightening targeting, improving Quality Score (Google), or testing manual vs automated bidding.' });
+      if (!yourCVR || yourCVR < bench.cvr[1]) recs.push({ priority: 'high', tag: 'Landing Page', title: 'Optimize your landing page', desc: 'Your CVR is below benchmark. A/B test your landing page, simplify forms, improve page speed, and ensure message match from ad to page.' });
+      if (!yourCPA || yourCPA > bench.cpa[1]) recs.push({ priority: 'med', tag: 'Efficiency', title: 'Tighten targeting to reduce CPA', desc: 'Pause underperforming ad groups, refine audience targeting, and focus budget on your highest converting campaigns.' });
+
+      recs.push({ priority: 'med', tag: 'Measurement', title: 'Verify your conversion tracking', desc: 'Ensure all conversion events are firing correctly. Gaps in measurement lead to poor optimization signals and inaccurate CPA reporting.' });
+      recs.push({ priority: 'low', tag: 'Testing', title: 'Set up a structured testing calendar', desc: 'Run one variable test at a time — creative, audience, bidding, or landing page. Document results to build a performance knowledge base.' });
+
+      return recs.slice(0, 5).map(r => `
+        <div class="rec-card">
+          <div class="rec-priority ${r.priority}">${r.priority === 'high' ? '!' : r.priority === 'med' ? '~' : '+'}</div>
+          <div class="rec-content">
+            <span class="rec-tag">${r.tag}</span>
+            <h4>${r.title}</h4>
+            <p>${r.desc}</p>
+          </div>
+        </div>`).join('');
+    }
+
+    // ─── Main generate function ───────────────────────────────────
+    function generateForecast() {
+      const vertical = document.getElementById('vertical').value;
+      const totalBudget = parseFloat(document.getElementById('totalBudget').value);
+      const advertiserType = document.getElementById('advertiserType').value;
+
+      if (!vertical || !totalBudget || !advertiserType) {
+        alert('Please fill in Advertiser Type, Industry Vertical, and Monthly Budget to generate your forecast.');
+        return;
+      }
+
+      // Show loading
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('loadingState').classList.add('visible');
+      document.getElementById('resultsState').classList.remove('visible');
+
+      setTimeout(() => {
+        const googleSplit = selectedChannel === 'meta' ? 0 : selectedChannel === 'google' ? 100 : (parseFloat(document.getElementById('googleSplit').value) || 60);
+        const metaSplit = selectedChannel === 'google' ? 0 : selectedChannel === 'meta' ? 100 : (parseFloat(document.getElementById('metaSplit').value) || 40);
+        const googleBudget = totalBudget * (googleSplit / 100);
+        const metaBudget = totalBudget * (metaSplit / 100);
+
+        const bench = benchmarks[vertical];
+        const googleResults = calcChannel(googleBudget, bench.google);
+        const metaResults = calcChannel(metaBudget, bench.meta);
+
+        // Combined
+        const combinedResults = [0, 1, 2].map(i => ({
+          clicks: googleResults[i].clicks + metaResults[i].clicks,
+          conversions: googleResults[i].conversions + metaResults[i].conversions,
+          cpa: (googleResults[i].conversions + metaResults[i].conversions) > 0 ? totalBudget / (googleResults[i].conversions + metaResults[i].conversions) : 0,
+          revenue: googleResults[i].revenue + metaResults[i].revenue,
+          roas: (googleResults[i].revenue + metaResults[i].revenue) > 0 ? (googleResults[i].revenue + metaResults[i].revenue) / totalBudget : 0,
+          ctr: (bench.google.ctr[i] + bench.meta.ctr[i]) / 2,
+          cpc: (googleBudget + metaBudget) / (googleResults[i].clicks + metaResults[i].clicks),
+          cvr: (bench.google.cvr[i] + bench.meta.cvr[i]) / 2,
+          cpm: (bench.google.cpm[i] + bench.meta.cpm[i]) / 2,
+        }));
+
+        // Summary cards
+        document.getElementById('sumBudget').textContent = fmt.currency(totalBudget);
+        document.getElementById('sumClicks').textContent = fmt.number(combinedResults[1].clicks);
+        document.getElementById('sumConversions').textContent = fmt.number(combinedResults[1].conversions);
+        document.getElementById('sumCPA').textContent = fmt.currency(combinedResults[1].cpa);
+
+        // Meta
+        document.getElementById('resultsMeta').textContent = `${vertical.charAt(0).toUpperCase() + vertical.slice(1)} · ${advertiserType} · $${totalBudget.toLocaleString()}/mo · ${selectedChannel === 'both' ? `Google ${googleSplit}% / Meta ${metaSplit}%` : selectedChannel === 'google' ? 'Google Ads only' : 'Meta Ads only'}`;
+
+        // Tables
+        if (selectedChannel !== 'meta') {
+          document.getElementById('googleSection').style.display = 'block';
+          document.getElementById('googleTableBody').innerHTML = buildTableRows(googleResults, googleBudget);
+        } else {
+          document.getElementById('googleSection').style.display = 'none';
+        }
+
+        if (selectedChannel !== 'google') {
+          document.getElementById('metaSection').style.display = 'block';
+          document.getElementById('metaTableBody').innerHTML = buildTableRows(metaResults, metaBudget);
+        } else {
+          document.getElementById('metaSection').style.display = 'none';
+        }
+
+        if (selectedChannel === 'both') {
+          document.getElementById('combinedSection').style.display = 'block';
+          document.getElementById('combinedTableBody').innerHTML = buildTableRows(combinedResults, totalBudget);
+        } else {
+          document.getElementById('combinedSection').style.display = 'none';
+        }
+
+        // Gap analysis
+        const yourCTR = parseFloat(document.getElementById('yourCTR').value) || null;
+        const yourCPC = parseFloat(document.getElementById('yourCPC').value) || null;
+        const yourCVR = parseFloat(document.getElementById('yourCVR').value) || null;
+        const yourCPA = parseFloat(document.getElementById('yourCPA').value) || null;
+        const yourROAS = parseFloat(document.getElementById('yourROAS').value) || null;
+
+        const avgBench = {
+          ctr: (bench.google.ctr[1] + bench.meta.ctr[1]) / 2,
+          cpc: (bench.google.cpc[1] + bench.meta.cpc[1]) / 2,
+          cvr: (bench.google.cvr[1] + bench.meta.cvr[1]) / 2,
+          cpa: (bench.google.cpa[1] + bench.meta.cpa[1]) / 2,
+          roas: (bench.google.roas[1] + bench.meta.roas[1]) / 2,
+        };
+
+        document.getElementById('gapGrid').innerHTML =
+          buildGapCard('CTR', yourCTR, avgBench.ctr, fmt.percent, true) +
+          buildGapCard('CPC', yourCPC, avgBench.cpc, fmt.currency, false) +
+          buildGapCard('CVR', yourCVR, avgBench.cvr, fmt.percent, true) +
+          buildGapCard('CPA', yourCPA, avgBench.cpa, fmt.currency, false) +
+          buildGapCard('ROAS', yourROAS, avgBench.roas, fmt.roas, true);
+
+        // Recommendations
+        document.getElementById('recsList').innerHTML = buildRecs(vertical, selectedChannel, yourCTR, yourCPC, yourCVR, yourCPA, avgBench);
+
+        // Show results
+        document.getElementById('loadingState').classList.remove('visible');
+        document.getElementById('resultsState').classList.add('visible');
+
+      }, 800);
+    }
+
+    // ─── Reset ────────────────────────────────────────────────────
+    function resetForm() {
+      document.getElementById('advertiserType').value = '';
+      document.getElementById('vertical').value = '';
+      document.getElementById('objective').value = '';
+      document.getElementById('totalBudget').value = '';
+      document.getElementById('googleSplit').value = '60';
+      document.getElementById('metaSplit').value = '40';
+      document.getElementById('orderValue').value = '';
+      document.getElementById('yourCTR').value = '';
+      document.getElementById('yourCPC').value = '';
+      document.getElementById('yourCVR').value = '';
+      document.getElementById('yourCPA').value = '';
+      document.getElementById('yourROAS').value = '';
+      selectedChannel = 'both';
+      document.querySelectorAll('.channel-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+      document.getElementById('splitRow').style.display = 'grid';
+      document.getElementById('emptyState').style.display = 'flex';
+      document.getElementById('resultsState').classList.remove('visible');
+      document.getElementById('loadingState').classList.remove('visible');
+    }
+  </script>
+</body>
+</html>
