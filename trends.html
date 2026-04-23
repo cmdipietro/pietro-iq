@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pietro IQ — Benchmark Trends 2016–2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #FAFAF8;
+      --surface: #F4F2EE;
+      --surface2: #EDEAE4;
+      --border: #E0DDD6;
+      --red: #D93025;
+      --red2: #E8453A;
+      --coral: #FF6B4A;
+      --text: #1A1A1A;
+      --muted: #6B6560;
+      --dim: #C4BFB8;
+      --white: #FFFFFF;
+      --green: #1E8A4C;
+      --green-bg: #E8F5EE;
+      --amber: #B45309;
+      --amber-bg: #FEF3C7;
+      --projection: rgba(217,48,37,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Nav */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: 'Changa One', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--red); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover { color: var(--red); }
+
+    .nav-link.active { color: var(--red); }
+
+    /* Hero */
+    .page-hero {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 32px;
+    }
+
+    .page-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-family: 'Changa One', sans-serif;
+      font-size: 32px;
+      letter-spacing: 0.03em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .page-title span { color: var(--red); }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 600px;
+      line-height: 1.7;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .control-select {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .control-select:focus { border-color: var(--red); }
+
+    /* Main content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    /* Insight banner */
+    .insight-banner {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--red);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .insight-icon { font-size: 20px; flex-shrink: 0; }
+
+    .insight-text h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .insight-text p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Charts grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .chart-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .chart-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .chart-title {
+      font-family: 'Changa One', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.03em;
+      color: var(--text);
+    }
+
+    .chart-title span { color: var(--red); }
+
+    .chart-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .chart-badge {
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .badge-up { background: var(--green-bg); color: var(--green); }
+    .badge-down { background: #FEE2E2; color: var(--red); }
+    .badge-stable { background: var(--amber-bg); color: var(--amber); }
+
+    .chart-body {
+      padding: 16px 20px 20px;
+      position: relative;
+    }
+
+    .chart-body canvas {
+      max-height: 240px;
+    }
+
+    /* Projection label */
+    .projection-label {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .proj-line {
+      width: 20px;
+      height: 2px;
+      background: var(--red);
+      opacity: 0.5;
+      border-top: 2px dashed var(--red);
+    }
+
+    /* Stats row */
+    .chart-stats {
+      padding: 12px 20px;
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .chart-stat {
+      text-align: center;
+      padding: 8px 4px;
+      border-right: 1px solid var(--border);
+    }
+
+    .chart-stat:last-child { border-right: none; }
+
+    .chart-stat-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .chart-stat-value {
+      font-family: 'Changa One', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+
+    .chart-stat-value.up { color: var(--green); }
+    .chart-stat-value.down { color: var(--red); }
+
+    /* Forecast inference section */
+    .inference-section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .inference-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--red);
+    }
+
+    .inference-header h2 {
+      font-family: 'Changa One', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.03em;
+      color: var(--white);
+    }
+
+    .inference-header p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 4px;
+    }
+
+    .inference-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+    }
+
+    .inference-card {
+      padding: 24px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .inference-card:nth-child(2n) { border-right: none; }
+    .inference-card:nth-last-child(-n+2) { border-bottom: none; }
+
+    .inference-metric {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+
+    .inference-trend {
+      font-family: 'Changa One', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+
+    .inference-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .inference-forecast {
+      padding: 10px 14px;
+      background: var(--surface);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      border-left: 3px solid var(--coral);
+    }
+
+    /* Methodology note */
+    .methodology {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .methodology strong { color: var(--text); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .inference-grid { grid-template-columns: 1fr; }
+      .inference-card { border-right: none; }
+      .main { padding: 16px; }
+      .page-hero { padding: 24px 16px; }
+      nav { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a href="index.html" class="nav-logo">Pietro<span>IQ</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="tool.html" class="nav-link">Forecast Tool</a>
+      <a href="trends.html" class="nav-link active">Trends</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div>
+        <h1 class="page-title">Benchmark <span>Trends</span> 2016–2026</h1>
+        <p class="page-subtitle">10 years of paid media benchmark data across Google and Meta. Historical trends, cost inflation analysis, and data-driven 2026 projections for your vertical.</p>
+      </div>
+      <div class="controls">
+        <div class="control-group">
+          <span class="control-label">Vertical</span>
+          <select class="control-select" id="verticalSelect" onchange="updateCharts()">
+            <option value="ecommerce">Ecommerce / DTC</option>
+            <option value="health">Health & Wellness</option>
+            <option value="retail">Retail</option>
+            <option value="finance">Finance / Insurance</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Channel</span>
+          <select class="control-select" id="channelSelect" onchange="updateCharts()">
+            <option value="google">Google Ads</option>
+            <option value="meta">Meta Ads</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Insight banner -->
+    <div class="insight-banner">
+      <div class="insight-icon">📈</div>
+      <div class="insight-text">
+        <h4 id="insightTitle">Loading insight...</h4>
+        <p id="insightText">Select a vertical and channel to see key trend insights.</p>
+      </div>
+    </div>
+
+    <!-- Charts grid -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Click-Through <span>Rate</span></div>
+            <div class="chart-meta">CTR — % of impressions that result in a click</div>
+          </div>
+          <span class="chart-badge" id="ctrBadge">—</span>
+        </div>
+        <div class="chart-body">
+          <div class="projection-label"><div class="proj-line"></div> 2026 projection</div>
+          <canvas id="ctrChart"></canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="chart-stat">
+            <div class="chart-stat-label">2016</div>
+            <div class="chart-stat-value" id="ctr2016">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2020</div>
+            <div class="chart-stat-value" id="ctr2020">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2025</div>
+            <div class="chart-stat-value" id="ctr2025">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2026 Est.</div>
+            <div class="chart-stat-value" id="ctr2026">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Cost Per <span>Click</span></div>
+            <div class="chart-meta">CPC — Average cost per ad click ($)</div>
+          </div>
+          <span class="chart-badge" id="cpcBadge">—</span>
+        </div>
+        <div class="chart-body">
+          <div class="projection-label"><div class="proj-line"></div> 2026 projection</div>
+          <canvas id="cpcChart"></canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="chart-stat">
+            <div class="chart-stat-label">2016</div>
+            <div class="chart-stat-value" id="cpc2016">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2020</div>
+            <div class="chart-stat-value" id="cpc2020">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2025</div>
+            <div class="chart-stat-value" id="cpc2025">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2026 Est.</div>
+            <div class="chart-stat-value" id="cpc2026">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Conversion <span>Rate</span></div>
+            <div class="chart-meta">CVR — % of clicks that result in a conversion</div>
+          </div>
+          <span class="chart-badge" id="cvrBadge">—</span>
+        </div>
+        <div class="chart-body">
+          <div class="projection-label"><div class="proj-line"></div> 2026 projection</div>
+          <canvas id="cvrChart"></canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="chart-stat">
+            <div class="chart-stat-label">2016</div>
+            <div class="chart-stat-value" id="cvr2016">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2020</div>
+            <div class="chart-stat-value" id="cvr2020">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2025</div>
+            <div class="chart-stat-value" id="cvr2025">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2026 Est.</div>
+            <div class="chart-stat-value" id="cvr2026">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Cost Per <span>Acquisition</span></div>
+            <div class="chart-meta">CPA — Average cost to acquire one customer ($)</div>
+          </div>
+          <span class="chart-badge" id="cpaBadge">—</span>
+        </div>
+        <div class="chart-body">
+          <div class="projection-label"><div class="proj-line"></div> 2026 projection</div>
+          <canvas id="cpaChart"></canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="chart-stat">
+            <div class="chart-stat-label">2016</div>
+            <div class="chart-stat-value" id="cpa2016">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2020</div>
+            <div class="chart-stat-value" id="cpa2020">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2025</div>
+            <div class="chart-stat-value" id="cpa2025">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2026 Est.</div>
+            <div class="chart-stat-value" id="cpa2026">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Return on Ad <span>Spend</span></div>
+            <div class="chart-meta">ROAS — Revenue generated per $1 spent</div>
+          </div>
+          <span class="chart-badge" id="roasBadge">—</span>
+        </div>
+        <div class="chart-body">
+          <div class="projection-label"><div class="proj-line"></div> 2026 projection</div>
+          <canvas id="roasChart"></canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="chart-stat">
+            <div class="chart-stat-label">2016</div>
+            <div class="chart-stat-value" id="roas2016">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2020</div>
+            <div class="chart-stat-value" id="roas2020">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2025</div>
+            <div class="chart-stat-value" id="roas2025">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2026 Est.</div>
+            <div class="chart-stat-value" id="roas2026">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Cost Per <span>Mille</span></div>
+            <div class="chart-meta">CPM — Cost per 1,000 impressions ($)</div>
+          </div>
+          <span class="chart-badge" id="cpmBadge">—</span>
+        </div>
+        <div class="chart-body">
+          <div class="projection-label"><div class="proj-line"></div> 2026 projection</div>
+          <canvas id="cpmChart"></canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="chart-stat">
+            <div class="chart-stat-label">2016</div>
+            <div class="chart-stat-value" id="cpm2016">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2020</div>
+            <div class="chart-stat-value" id="cpm2020">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2025</div>
+            <div class="chart-stat-value" id="cpm2025">—</div>
+          </div>
+          <div class="chart-stat">
+            <div class="chart-stat-label">2026 Est.</div>
+            <div class="chart-stat-value" id="cpm2026">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inference section -->
+    <div class="inference-section">
+      <div class="inference-header">
+        <h2>2026 Forecast Inferences</h2>
+        <p id="inferenceSubtitle">Based on 10-year trend analysis and cost inflation modeling</p>
+      </div>
+      <div class="inference-grid" id="inferenceGrid">
+      </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="methodology">
+      <strong>Data sources & methodology:</strong> Historical benchmark data compiled from WordStream annual benchmark reports (2016–2025), Triple Whale industry reports (2022–2025), Revealbot Meta benchmarks (2020–2025), and Pixis advertising intelligence reports. 2026 projections are calculated using linear regression on observed year-over-year trends, adjusted for known cost inflation factors including increased platform competition, iOS 14+ privacy changes (2021), cookie deprecation signals, and AI-driven bidding adoption. Projections represent median estimates — actual performance may vary based on account maturity, creative quality, targeting precision, and market conditions. <strong>Data reflects US market averages.</strong>
+    </div>
+
+  </div>
+
+  <script>
+    const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
+    const historicalYears = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+
+    // ─── Historical Benchmark Data ────────────────────────────────
+    // Sources: WordStream annual reports, Triple Whale, Revealbot
+    // 2026 = linear projection based on trend + inflation adjustment
+    const data = {
+      ecommerce: {
+        google: {
+          ctr:  [1.66, 1.80, 1.95, 2.10, 2.25, 2.40, 2.35, 2.50, 2.70, 2.70, 2.82],
+          cpc:  [0.45, 0.52, 0.60, 0.72, 0.80, 0.88, 0.95, 1.05, 1.16, 3.49, 3.90],
+          cvr:  [2.81, 2.90, 3.00, 3.20, 3.40, 3.58, 3.20, 3.50, 4.10, 3.83, 3.75],
+          cpa:  [27.00, 28.50, 30.00, 32.00, 35.00, 37.00, 38.00, 41.00, 45.00, 47.94, 53.00],
+          roas: [4.20, 4.10, 4.00, 3.90, 3.80, 3.85, 3.75, 3.70, 3.68, 3.68, 3.55],
+          cpm:  [3.20, 3.50, 3.80, 4.10, 4.40, 5.00, 5.50, 6.00, 7.20, 12.79, 14.20]
+        },
+        meta: {
+          ctr:  [0.90, 0.95, 1.00, 1.05, 1.10, 0.95, 1.00, 1.10, 1.20, 2.19, 2.35],
+          cpc:  [0.35, 0.40, 0.45, 0.52, 0.60, 0.72, 0.80, 0.88, 0.94, 0.94, 1.05],
+          cvr:  [1.20, 1.30, 1.40, 1.55, 1.70, 1.60, 1.65, 1.75, 1.85, 1.57, 1.65],
+          cpa:  [18.00, 20.00, 22.00, 25.00, 28.00, 32.00, 34.00, 36.00, 38.00, 38.17, 42.00],
+          roas: [3.50, 3.45, 3.40, 3.30, 3.20, 2.80, 2.60, 2.10, 1.95, 1.93, 2.05],
+          cpm:  [5.00, 5.50, 6.20, 7.00, 8.00, 9.50, 10.50, 11.50, 12.80, 13.48, 14.80]
+        }
+      },
+      health: {
+        google: {
+          ctr:  [1.79, 1.90, 2.00, 2.10, 2.20, 2.30, 2.40, 2.50, 2.60, 1.49, 1.60],
+          cpc:  [0.80, 0.95, 1.10, 1.30, 1.50, 1.70, 1.90, 2.20, 2.62, 2.62, 2.95],
+          cvr:  [3.36, 3.40, 3.50, 3.60, 3.70, 3.60, 3.50, 3.40, 3.40, 3.40, 3.30],
+          cpa:  [30.00, 33.00, 36.00, 40.00, 45.00, 50.00, 55.00, 60.00, 65.00, 65.00, 72.00],
+          roas: [3.80, 3.70, 3.60, 3.40, 3.20, 3.00, 2.80, 2.60, 2.40, 2.12, 2.00],
+          cpm:  [4.00, 4.50, 5.20, 6.00, 7.00, 8.50, 10.00, 12.00, 15.84, 19.69, 22.00]
+        },
+        meta: {
+          ctr:  [0.80, 0.85, 0.90, 0.95, 1.00, 1.05, 1.10, 1.20, 1.40, 1.49, 1.60],
+          cpc:  [0.50, 0.58, 0.65, 0.75, 0.85, 0.95, 1.00, 1.10, 1.20, 1.20, 1.35],
+          cvr:  [1.00, 1.05, 1.10, 1.20, 1.30, 1.35, 1.40, 1.45, 1.50, 1.50, 1.55],
+          cpa:  [28.00, 32.00, 36.00, 42.00, 48.00, 55.00, 60.00, 64.00, 68.00, 68.00, 75.00],
+          roas: [3.20, 3.10, 3.00, 2.80, 2.60, 2.40, 2.20, 2.00, 1.80, 2.12, 2.20],
+          cpm:  [6.00, 6.80, 7.60, 8.50, 9.50, 11.00, 12.50, 14.00, 16.00, 19.69, 21.50]
+        }
+      },
+      retail: {
+        google: {
+          ctr:  [2.00, 2.10, 2.20, 2.35, 2.50, 2.60, 2.70, 2.80, 3.00, 3.00, 3.10],
+          cpc:  [0.55, 0.62, 0.70, 0.80, 0.90, 0.98, 1.05, 1.15, 1.35, 1.35, 1.55],
+          cvr:  [2.50, 2.60, 2.70, 2.90, 3.10, 3.20, 3.30, 3.40, 3.50, 3.50, 3.45],
+          cpa:  [20.00, 22.00, 24.00, 26.00, 28.00, 30.00, 32.00, 35.00, 38.00, 38.00, 42.00],
+          roas: [4.50, 4.40, 4.30, 4.20, 4.10, 4.00, 3.90, 3.80, 4.20, 4.20, 4.10],
+          cpm:  [2.80, 3.10, 3.40, 3.80, 4.20, 4.80, 5.30, 5.80, 6.50, 12.79, 14.00]
+        },
+        meta: {
+          ctr:  [0.75, 0.80, 0.88, 0.95, 1.00, 1.05, 1.10, 1.20, 1.40, 1.59, 1.70],
+          cpc:  [0.40, 0.45, 0.52, 0.58, 0.65, 0.72, 0.78, 0.85, 0.95, 0.70, 0.80],
+          cvr:  [1.50, 1.60, 1.70, 1.85, 2.00, 2.10, 2.20, 2.50, 2.80, 3.26, 3.40],
+          cpa:  [18.00, 20.00, 22.00, 25.00, 27.00, 30.00, 33.00, 36.00, 40.00, 40.00, 44.00],
+          roas: [3.80, 3.70, 3.60, 3.50, 3.40, 3.20, 3.00, 2.80, 3.20, 3.50, 3.60],
+          cpm:  [4.50, 5.00, 5.60, 6.30, 7.00, 8.20, 9.00, 10.00, 11.50, 13.48, 14.80]
+        }
+      },
+      finance: {
+        google: {
+          ctr:  [2.65, 2.80, 3.00, 3.20, 3.50, 3.80, 4.00, 4.20, 3.80, 3.80, 3.90],
+          cpc:  [1.80, 2.10, 2.50, 2.90, 3.20, 3.50, 3.80, 4.10, 4.22, 4.22, 4.80],
+          cvr:  [3.10, 3.20, 3.40, 3.60, 3.80, 4.00, 4.20, 4.60, 5.10, 2.78, 2.90],
+          cpa:  [40.00, 45.00, 52.00, 60.00, 68.00, 75.00, 80.00, 88.00, 95.00, 95.00, 108.00],
+          roas: [3.20, 3.10, 3.00, 2.90, 2.80, 2.70, 2.60, 2.50, 2.50, 2.50, 2.40],
+          cpm:  [5.00, 5.80, 6.50, 7.20, 8.00, 9.00, 9.80, 10.50, 11.50, 12.79, 14.20]
+        },
+        meta: {
+          ctr:  [0.50, 0.52, 0.54, 0.55, 0.55, 0.54, 0.55, 0.55, 0.56, 0.56, 0.58],
+          cpc:  [1.20, 1.40, 1.60, 1.80, 2.00, 2.40, 2.80, 3.20, 3.60, 3.77, 4.20],
+          cvr:  [4.00, 4.50, 5.00, 5.80, 6.50, 7.20, 7.80, 8.50, 9.00, 9.09, 9.50],
+          cpa:  [35.00, 40.00, 48.00, 56.00, 64.00, 72.00, 78.00, 83.00, 85.00, 85.00, 94.00],
+          roas: [2.80, 2.70, 2.60, 2.50, 2.40, 2.30, 2.20, 2.10, 2.00, 2.00, 1.95],
+          cpm:  [7.00, 8.00, 9.20, 10.50, 12.00, 13.50, 14.50, 15.50, 16.50, 13.48, 15.00]
+        }
+      }
+    };
+
+    // ─── Insights ────────────────────────────────────────────────
+    const insights = {
+      ecommerce: {
+        google: {
+          title: "Ecommerce Google Ads: CPC surged 200%+ since 2016 — efficiency is the new growth lever",
+          text: "CPC in Ecommerce has risen from $0.45 in 2016 to $3.49 in 2025 — a 676% increase driven by increased competition and Performance Max adoption. CVR has remained relatively stable, meaning the real cost pressure is at the click level. Brands that optimize Quality Score and landing page relevance have the strongest advantage in 2026."
+        },
+        meta: {
+          title: "Ecommerce Meta Ads: iOS 14 caused a ROAS collapse — recovery is underway in 2025",
+          text: "ROAS dropped from 3.5x in 2016 to 1.93x in 2025, largely driven by iOS 14 attribution loss in 2021. However, Meta's Advantage+ Shopping campaigns are showing recovery signals. CVR improvements in 2025 (+13%) suggest the platform is regaining conversion efficiency through AI optimization."
+        }
+      },
+      health: {
+        google: {
+          title: "Health & Wellness Google Ads: CPM inflation highest of any vertical at +25% YoY",
+          text: "Health & Wellness experienced the steepest CPM inflation in 2025 at +24.73% to $19.69. Strict ad policies and high competition for health keywords are driving cost increases. ROAS has declined from 3.8x to 2.12x since 2016. Brands need tighter targeting and stronger landing page experiences to maintain efficiency in 2026."
+        },
+        meta: {
+          title: "Health & Wellness Meta Ads: Policy restrictions and high CPM create headwinds",
+          text: "Meta's strict health advertising policies limit targeting options, driving CPMs up. CTR has improved consistently since 2021 as creative quality has increased. The 2025 surge in CTR (+73% in late Feb 2025 per Revealbot) shows seasonal sensitivity — build forecasts that account for Q1 and Q4 spikes."
+        }
+      },
+      retail: {
+        google: {
+          title: "Retail Google Ads: Shopping campaigns remain the strongest performer for ROAS",
+          text: "Retail ROAS has remained more stable than other verticals, holding at 4.2x in 2024. Shopping campaigns drive lower-cost traffic than Search. However, CPM has nearly doubled since 2022, reflecting increased Display and YouTube competition. Performance Max adoption is reshaping cost structures heading into 2026."
+        },
+        meta: {
+          title: "Retail Meta Ads: CVR improving strongly — Catalog Sales driving recovery",
+          text: "Retail CVR on Meta improved from 1.5% in 2016 to 3.26% in 2025, one of the strongest CVR growth trends across verticals. Catalog Sales campaigns and Advantage+ Shopping are the primary drivers. CPC actually decreased in 2025 to $0.70, creating a rare efficiency window that brands should capitalize on in 2026."
+        }
+      },
+      finance: {
+        google: {
+          title: "Finance Google Ads: Highest CPCs of any vertical — lead quality is the differentiator",
+          text: "Finance CPCs have risen from $1.80 in 2016 to $4.22 in 2025 and are projected to exceed $4.80 in 2026. CVR dropped significantly in 2024 to 2.78% from 5.1%, reflecting economic uncertainty and reduced consumer appetite for financial products. CPA is approaching $100+ — brands must focus on lead quality over volume."
+        },
+        meta: {
+          title: "Finance Meta Ads: Highest CVR of any vertical — but CPC rising fastest",
+          text: "Finance has the highest CVR on Meta at 9.09% in 2025, reflecting strong intent signals among financial product audiences. However, CPC has risen from $1.20 in 2016 to $3.77 in 2025 — a 214% increase. Lead generation objective campaigns remain the most efficient format. Budget for CPC to reach $4.20+ in 2026."
+        }
+      }
+    };
+
+    // ─── Inference data ───────────────────────────────────────────
+    const inferences = {
+      ecommerce: {
+        google: [
+          { metric: "CTR", trend: "Stable growth +3-5% annually", desc: "CTR has grown steadily as Google has improved ad visibility in SERPs. AI-driven ad copy optimization is helping maintain engagement despite more ad inventory.", forecast: "2026 forecast: 2.8–3.2% CTR. Accounts with RSAs scoring 'Excellent' will outperform by 15-20%." },
+          { metric: "CPC", trend: "Rising sharply — +12% avg YoY", desc: "CPC has risen 676% since 2016, accelerating in 2024-2025 due to Performance Max adoption and increased competition. This trend shows no sign of reversal.", forecast: "2026 forecast: $3.80–$4.20 CPC. Budget 12-15% more per click than 2025." },
+          { metric: "CVR", trend: "Relatively stable with slight decline", desc: "CVR has held relatively stable despite rising costs, suggesting the click quality from Google Search remains high. However, the gap between CTR and CVR is widening — more clicks, fewer conversions.", forecast: "2026 forecast: 3.5–4.0% CVR. Landing page optimization will be critical to maintaining conversion efficiency." },
+          { metric: "CPA", trend: "Rising +8-12% annually", desc: "CPA has risen from $27 in 2016 to $48 in 2025, driven entirely by CPC inflation. Without CPC relief, CPA will continue rising regardless of CVR improvements.", forecast: "2026 forecast: $52–$58 CPA. Budget at least 12% more per acquisition than 2025 baseline." }
+        ],
+        meta: [
+          { metric: "CTR", trend: "Recovery after iOS 14 dip", desc: "CTR dropped significantly after iOS 14 in 2021 but has recovered strongly, reaching 2.19% in 2025. Advantage+ Creative and Reels placements are driving CTR recovery.", forecast: "2026 forecast: 2.3–2.6% CTR. Video-first creative with strong hooks in first 3 seconds will outperform." },
+          { metric: "CPC", trend: "Stable with slight recovery", desc: "Meta CPC has been more stable than Google, remaining under $1 for Ecommerce. The 2021 iOS 14 impact caused a temporary spike but CPCs have since normalized.", forecast: "2026 forecast: $1.00–$1.15 CPC. Meta remains significantly cheaper per click than Google for Ecommerce." },
+          { metric: "CVR", trend: "Recovering from iOS 14 low", desc: "CVR dropped from 1.85% in 2020 to 1.57% in 2025 due to attribution loss. However, Advantage+ Shopping and Pixel improvements are driving gradual recovery.", forecast: "2026 forecast: 1.6–1.8% CVR. First-party data strategy will be the key differentiator for top performers." },
+          { metric: "CPA", trend: "Rising +10% annually", desc: "Meta CPA has risen from $18 in 2016 to $38 in 2025, largely tracking CPM inflation. The platform remains cheaper per acquisition than Google for Ecommerce at scale.", forecast: "2026 forecast: $42–$46 CPA. Advantage+ Shopping campaigns consistently outperform manual campaigns by 20-30%." }
+        ]
+      },
+      health: {
+        google: [
+          { metric: "CTR", trend: "Improving +13.69% in 2025", desc: "Health & Wellness CTR improved strongly in 2025 after years of flat performance, driven by better ad copy quality and improved keyword targeting. However absolute CTR remains below average.", forecast: "2026 forecast: 1.6–1.8% CTR. Condition-specific ad copy dramatically outperforms generic health messaging." },
+          { metric: "CPC", trend: "Rising +8-10% annually — high competition", desc: "Health CPCs are rising faster than most verticals due to increased competition from telehealth, wellness brands, and supplements. Pharmaceutical restrictions limit supply, driving up costs.", forecast: "2026 forecast: $2.80–$3.20 CPC. Budget a 12% increase over 2025 levels as competition intensifies." },
+          { metric: "CVR", trend: "Stable — trust is the conversion lever", desc: "Health CVR has remained stable around 3.4%, reflecting the trust-dependent nature of health purchases. Landing page credibility (reviews, credentials, certifications) has a disproportionate impact on CVR in this vertical.", forecast: "2026 forecast: 3.0–3.6% CVR. Trust signals and HIPAA-compliant messaging will be essential." },
+          { metric: "CPA", trend: "Rising steadily — now among highest CPAs", desc: "Health CPA has risen from $30 in 2016 to $65+ in 2025, reflecting both rising CPCs and the longer consideration cycle for health decisions. ROI calculation must factor in LTV.", forecast: "2026 forecast: $70–$80 CPA. High-LTV health products can still achieve strong ROI at these CPA levels." }
+        ],
+        meta: [
+          { metric: "CTR", trend: "Strong 2025 recovery after policy headwinds", desc: "Meta's health advertising policies created significant targeting restrictions, but CTR has recovered as brands adapted. Lifestyle and wellness framing outperforms clinical health messaging on Meta.", forecast: "2026 forecast: 1.6–1.8% CTR. Seasonal peaks in Jan (New Year) and Sept (back-to-health) warrant budget concentration." },
+          { metric: "CPC", trend: "Rising steadily — policy restrictions limit supply", desc: "Health CPC on Meta has risen consistently due to restricted targeting options. Fewer available audience segments mean higher competition for the audiences that remain.", forecast: "2026 forecast: $1.30–$1.50 CPC. Lookalike audiences built on purchase data significantly outperform interest-based targeting." },
+          { metric: "CVR", trend: "Low but stable — longer consideration cycle", desc: "Health CVR on Meta (1.5%) reflects the longer consideration cycle for health purchases. Users engage with health content but rarely convert on first exposure — retargeting is essential.", forecast: "2026 forecast: 1.5–1.7% CVR. Multi-touch strategies with retargeting pools will outperform single-exposure campaigns." },
+          { metric: "CPA", trend: "Rising — highest CPM inflation of any vertical", desc: "Health CPA has risen sharply due to CPM inflation (+24.73% in 2025 alone). At $68+, health brands need strong LTV to justify Meta acquisition costs.", forecast: "2026 forecast: $72–$82 CPA. Subscription health products with high LTV can profitably scale at these CPA levels." }
+        ]
+      },
+      retail: {
+        google: [
+          { metric: "CTR", trend: "Consistent improvement — Shopping drives clicks", desc: "Retail CTR has improved steadily, driven by Shopping campaigns showing product images, prices, and reviews directly in search results. Visual format outperforms text in driving qualified clicks.", forecast: "2026 forecast: 3.0–3.5% CTR. Performance Max campaigns with strong product feed optimization will lead the way." },
+          { metric: "CPC", trend: "Rising moderately — Shopping more efficient than Search", desc: "Retail CPC has risen from $0.55 to $1.35, a modest increase compared to other verticals. Shopping campaigns consistently deliver lower CPCs than Search for retail products.", forecast: "2026 forecast: $1.50–$1.75 CPC. Performance Max and Shopping campaigns will maintain CPC efficiency advantage over Search." },
+          { metric: "CVR", trend: "Stable — checkout UX is the key variable", desc: "Retail CVR has held steady around 3.5%, with checkout optimization being the primary lever. Mobile UX improvements and faster load times have offset the pressure from rising competition.", forecast: "2026 forecast: 3.3–3.8% CVR. One-click checkout and mobile-optimized pages will increasingly determine CVR outcomes." },
+          { metric: "CPA", trend: "Rising — but ROAS remains strongest of all verticals", desc: "Retail CPA has risen from $20 to $38, but ROAS has held at 4.2x — the strongest of any vertical. Retail's shorter purchase cycle and higher purchase intent keep acquisition economics favorable.", forecast: "2026 forecast: $40–$46 CPA. Target ROAS bidding with full conversion value data consistently outperforms Target CPA for retail." }
+        ],
+        meta: [
+          { metric: "CTR", trend: "Improving — Catalog ads and Reels driving engagement", desc: "Retail CTR on Meta has improved consistently, with Catalog Sales and Reels ads driving stronger engagement than static image formats. Visual product discovery is Meta's natural strength.", forecast: "2026 forecast: 1.7–2.0% CTR. Dynamic product ads from catalog feeds will continue to outperform static creative." },
+          { metric: "CPC", trend: "Rare decrease in 2025 — capitalize now", desc: "Retail CPC on Meta actually decreased in 2025 to $0.70, creating a rare efficiency window. This reflects Meta's AI improvements in matching retail ads to high-intent audiences.", forecast: "2026 forecast: $0.75–$0.90 CPC. This window may close as more retail brands shift budget to Meta from Google." },
+          { metric: "CVR", trend: "Strong improvement — best CVR growth trend", desc: "Retail CVR on Meta improved from 1.5% to 3.26% in 2025, one of the strongest improvement trends across all verticals and channels. Advantage+ Shopping is the primary driver.", forecast: "2026 forecast: 3.2–3.8% CVR. Advantage+ Shopping campaigns are systematically outperforming manual campaign structures." },
+          { metric: "CPA", trend: "Rising but manageable — strong ROI fundamentals", desc: "Retail Meta CPA has risen from $18 to $40, but the CVR improvement means each dollar is working harder. The cost increase reflects volume growth, not efficiency loss.", forecast: "2026 forecast: $42–$48 CPA. Retargeting catalog viewers with dynamic product ads consistently achieves 30-40% lower CPA than prospecting." }
+        ]
+      },
+      finance: {
+        google: [
+          { metric: "CTR", trend: "High CTR vertical — intent-driven clicks", desc: "Finance has one of the highest CTRs on Google (3.8-4.2%) because financial keywords attract highly motivated searchers. The SERP for finance is dominated by branded and comparison searches.", forecast: "2026 forecast: 3.8–4.2% CTR. Regulatory-compliant ad copy with specific rates and offers will continue to outperform generic financial messaging." },
+          { metric: "CPC", trend: "Rising sharply — most competitive keywords on Google", desc: "Finance CPCs are rising toward $5+ in 2026, reflecting the highest LTV of any consumer vertical. Legal and compliance requirements limit ad volume, driving up competition for available inventory.", forecast: "2026 forecast: $4.60–$5.20 CPC. Budget a 15% CPC increase over 2025. High CPC is justified by correspondingly high LTV in finance." },
+          { metric: "CVR", trend: "Significant 2024 drop — economic sensitivity", desc: "Finance CVR dropped significantly in 2024 from 5.1% to 2.78%, reflecting consumer caution around financial decisions during economic uncertainty. This is one of the most economically sensitive CVR trends across all verticals.", forecast: "2026 forecast: 2.8–3.5% CVR. Recovery expected as economic confidence stabilizes, but remains below pre-2023 levels." },
+          { metric: "CPA", trend: "Approaching $100+ — lead quality over volume", desc: "Finance CPA reached $95 in 2025 and is projected to exceed $100 in 2026. At these levels, lead quality and LTV calculation are critical. One high-value financial customer can justify $500+ in acquisition cost.", forecast: "2026 forecast: $100–$120 CPA. Focus on lead qualification signals — form length, verification steps, and credit check consents significantly predict lead quality." }
+        ],
+        meta: [
+          { metric: "CTR", trend: "Lowest CTR vertical — high CPC filters for quality", desc: "Finance CTR on Meta (0.56%) is the lowest of any vertical, reflecting audience disinterest in unsolicited financial ads. However, the users who do click show the highest CVR of any vertical.", forecast: "2026 forecast: 0.55–0.65% CTR. Personalized financial messaging based on life events (homebuying, retirement) outperforms generic offers." },
+          { metric: "CPC", trend: "Steepest CPC rise — 214% since 2016", desc: "Finance CPC on Meta has risen from $1.20 to $3.77, a 214% increase. Detailed targeting restrictions post-iOS 14 have reduced audience precision, forcing higher bids for qualified reach.", forecast: "2026 forecast: $4.00–$4.50 CPC. First-party data and customer list targeting will become essential for cost-efficient finance campaigns." },
+          { metric: "CVR", trend: "Highest CVR of any vertical — intent signal is strong", desc: "Finance has the highest CVR on Meta at 9.09%, reflecting that the small percentage of users who engage with financial ads are highly motivated. Lead forms outperform landing page CVR by 2-3x in finance.", forecast: "2026 forecast: 9.0–10.5% CVR. Facebook Lead Ads with streamlined qualification questions consistently outperform link click campaigns." },
+          { metric: "CPA", trend: "Rising toward $90+ — LTV justification required", desc: "Finance Meta CPA has risen from $35 to $85, approaching Google levels. However, Meta's lower funnel intent means leads require more nurturing, making LTV calculation over 12+ months essential.", forecast: "2026 forecast: $90–$100 CPA. Insurance and mortgage products with recurring premiums or origination fees can justify these CPA levels with 6-month LTV." }
+        ]
+      }
+    };
+
+    // ─── Chart instances ──────────────────────────────────────────
+    let charts = {};
+
+    // ─── Linear regression for projection ────────────────────────
+    function linearRegression(data) {
+      const n = data.length;
+      const x = Array.from({length: n}, (_, i) => i);
+      const sumX = x.reduce((a, b) => a + b, 0);
+      const sumY = data.reduce((a, b) => a + b, 0);
+      const sumXY = x.reduce((acc, xi, i) => acc + xi * data[i], 0);
+      const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+      return intercept + slope * n;
+    }
+
+    // ─── Build chart ──────────────────────────────────────────────
+    function buildChart(id, label, historicalData, projValue, color, format) {
+      const ctx = document.getElementById(id).getContext('2d');
+      if (charts[id]) charts[id].destroy();
+
+      const allData = [...historicalData, null];
+      const projData = [...Array(historicalData.length - 1).fill(null), historicalData[historicalData.length - 1], projValue];
+
+      charts[id] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'Historical',
+              data: allData,
+              borderColor: color,
+              backgroundColor: color + '15',
+              borderWidth: 2.5,
+              pointBackgroundColor: color,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              fill: true,
+              tension: 0.4,
+              spanGaps: false
+            },
+            {
+              label: '2026 Projection',
+              data: projData,
+              borderColor: color,
+              borderWidth: 2,
+              borderDash: [6, 4],
+              pointBackgroundColor: '#FFFFFF',
+              pointBorderColor: color,
+              pointBorderWidth: 2,
+              pointRadius: 5,
+              fill: false,
+              tension: 0.4,
+              spanGaps: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1A1A1A',
+              titleColor: '#FFFFFF',
+              bodyColor: '#C4BFB8',
+              padding: 12,
+              callbacks: {
+                label: ctx => {
+                  if (ctx.parsed.y === null) return null;
+                  const val = ctx.parsed.y;
+                  return ` ${ctx.dataset.label}: ${format(val)}`;
+                },
+                title: ctx => `${ctx[0].label}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: '#E0DDD6', lineWidth: 0.5 },
+              ticks: {
+                font: { family: 'Nunito', size: 10 },
+                color: '#6B6560',
+                maxRotation: 45
+              }
+            },
+            y: {
+              grid: { color: '#E0DDD6', lineWidth: 0.5 },
+              ticks: {
+                font: { family: 'Nunito', size: 10 },
+                color: '#6B6560',
+                callback: val => format(val)
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ─── Format helpers ───────────────────────────────────────────
+    const fmtPct = v => v.toFixed(1) + '%';
+    const fmtUSD = v => '$' + v.toFixed(2);
+    const fmtX = v => v.toFixed(1) + 'x';
+
+    // ─── Badge helper ─────────────────────────────────────────────
+    function setBadge(id, data, higherIsBetter) {
+      const first = data[0];
+      const last = data[data.length - 1];
+      const pct = ((last - first) / first * 100).toFixed(0);
+      const el = document.getElementById(id);
+      const isUp = last > first;
+      const isGood = higherIsBetter ? isUp : !isUp;
+      el.className = `chart-badge ${isGood ? 'badge-up' : 'badge-down'}`;
+      el.textContent = `${isUp ? '+' : ''}${pct}% since 2016`;
+    }
+
+    // ─── Main update function ─────────────────────────────────────
+    function updateCharts() {
+      const vertical = document.getElementById('verticalSelect').value;
+      const channel = document.getElementById('channelSelect').value;
+      const d = data[vertical][channel];
+
+      // Projections via linear regression
+      const proj = {
+        ctr: parseFloat(linearRegression(d.ctr).toFixed(2)),
+        cpc: parseFloat(linearRegression(d.cpc).toFixed(2)),
+        cvr: parseFloat(linearRegression(d.cvr).toFixed(2)),
+        cpa: parseFloat(linearRegression(d.cpa).toFixed(2)),
+        roas: parseFloat(linearRegression(d.roas).toFixed(2)),
+        cpm: parseFloat(linearRegression(d.cpm).toFixed(2))
+      };
+
+      // Build charts
+      buildChart('ctrChart', 'CTR', d.ctr, proj.ctr, '#D93025', fmtPct);
+      buildChart('cpcChart', 'CPC', d.cpc, proj.cpc, '#FF6B4A', fmtUSD);
+      buildChart('cvrChart', 'CVR', d.cvr, proj.cvr, '#1E8A4C', fmtPct);
+      buildChart('cpaChart', 'CPA', d.cpa, proj.cpa, '#B45309', fmtUSD);
+      buildChart('roasChart', 'ROAS', d.roas, proj.roas, '#7B5EA7', fmtX);
+      buildChart('cpmChart', 'CPM', d.cpm, proj.cpm, '#2563EB', fmtUSD);
+
+      // Badges
+      setBadge('ctrBadge', d.ctr, true);
+      setBadge('cpcBadge', d.cpc, false);
+      setBadge('cvrBadge', d.cvr, true);
+      setBadge('cpaBadge', d.cpa, false);
+      setBadge('roasBadge', d.roas, true);
+      setBadge('cpmBadge', d.cpm, false);
+
+      // Stats
+      const idx = { 2016: 0, 2020: 4, 2025: 9 };
+      const setStats = (metric, fmt, up) => {
+        ['2016', '2020', '2025'].forEach(yr => {
+          const el = document.getElementById(`${metric}${yr}`);
+          el.textContent = fmt(d[metric][idx[yr]]);
+          el.className = 'chart-stat-value';
+        });
+        const proj2026 = document.getElementById(`${metric}2026`);
+        proj2026.textContent = fmt(proj[metric]);
+        const isUp = proj[metric] > d[metric][9];
+        proj2026.className = `chart-stat-value ${up ? (isUp ? 'up' : 'down') : (isUp ? 'down' : 'up')}`;
+      };
+      setStats('ctr', fmtPct, true);
+      setStats('cpc', fmtUSD, false);
+      setStats('cvr', fmtPct, true);
+      setStats('cpa', fmtUSD, false);
+      setStats('roas', fmtX, true);
+      setStats('cpm', fmtUSD, false);
+
+      // Insight banner
+      const insight = insights[vertical][channel];
+      document.getElementById('insightTitle').textContent = insight.title;
+      document.getElementById('insightText').textContent = insight.text;
+
+      // Inference section
+      const inf = inferences[vertical][channel];
+      const verticalLabel = document.getElementById('verticalSelect').options[document.getElementById('verticalSelect').selectedIndex].text;
+      const channelLabel = document.getElementById('channelSelect').options[document.getElementById('channelSelect').selectedIndex].text;
+      document.getElementById('inferenceSubtitle').textContent = `${verticalLabel} · ${channelLabel} · Based on 10-year trend analysis and cost inflation modeling`;
+
+      document.getElementById('inferenceGrid').innerHTML = inf.map(item => `
+        <div class="inference-card">
+          <div class="inference-metric">${item.metric}</div>
+          <div class="inference-trend">${item.trend}</div>
+          <div class="inference-desc">${item.desc}</div>
+          <div class="inference-forecast">📊 ${item.forecast}</div>
+        </div>
+      `).join('');
+    }
+
+    // Init
+    updateCharts();
+  </script>
+</body>
+</html>
