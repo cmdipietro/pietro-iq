@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pietro IQ — Forecast Tool</title>
   <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
       --bg: #FAFAF8;
@@ -79,13 +80,130 @@
 
     .nav-link:hover { color: var(--red); }
 
+    /* Trend context styles */
+    .trend-context {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .trend-context-header {
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--red), var(--coral));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .trend-context-header h3 {
+      font-family: 'Changa One', sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      color: var(--white);
+    }
+
+    .trend-context-header a {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .trend-context-header a:hover { color: var(--white); }
+
+    .trend-insight {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: rgba(217,48,37,0.03);
+    }
+
+    .trend-insight-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    .trend-insight-text {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .trend-insight-text strong { color: var(--text); }
+
+    .trend-mini-charts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .trend-mini-card {
+      padding: 14px 16px;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+
+    .trend-mini-card:last-child { border-right: none; }
+
+    .trend-mini-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .trend-mini-chart-wrap {
+      height: 50px;
+      margin-bottom: 8px;
+    }
+
+    .trend-mini-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .trend-mini-value {
+      font-family: 'Changa One', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .trend-mini-change {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .trend-mini-change.up { background: var(--green-bg); color: var(--green); }
+    .trend-mini-change.down { background: #FEE2E2; color: var(--red); }
+
+    .trend-mini-proj {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .trend-mini-proj span {
+      font-weight: 700;
+      color: var(--coral);
+    }
+
     .nav-badge {
       padding: 6px 14px;
       background: var(--red);
       color: var(--white);
       font-size: 11px;
       font-weight: 700;
-      font-family: 'Nunito', sans-serif;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       border-radius: 2px;
@@ -696,6 +814,7 @@
     <a href="index.html" class="nav-logo">Pietro<span>IQ</span></a>
     <div class="nav-links">
       <a href="index.html" class="nav-link">Home</a>
+      <a href="trends.html" class="nav-link">Trends</a>
       <a href="index.html#early-access" class="nav-badge">Get Early Access</a>
     </div>
   </nav>
@@ -850,6 +969,53 @@
           <button class="btn-export" onclick="window.print()">⬇ Export</button>
         </div>
 
+        <!-- Trend context -->
+        <div class="trend-context" id="trendContext">
+          <div class="trend-context-header">
+            <h3>📈 10-Year Trend Context</h3>
+            <a href="trends.html">View Full Trends →</a>
+          </div>
+          <div class="trend-insight">
+            <div class="trend-insight-icon">💡</div>
+            <div class="trend-insight-text" id="trendInsightText"></div>
+          </div>
+          <div class="trend-mini-charts">
+            <div class="trend-mini-card">
+              <div class="trend-mini-label">CPC Trend</div>
+              <div class="trend-mini-chart-wrap"><canvas id="miniCpcChart"></canvas></div>
+              <div class="trend-mini-stats">
+                <div>
+                  <div class="trend-mini-value" id="miniCpcValue">—</div>
+                  <div class="trend-mini-proj">2026 est: <span id="miniCpcProj">—</span></div>
+                </div>
+                <div class="trend-mini-change down" id="miniCpcChange">—</div>
+              </div>
+            </div>
+            <div class="trend-mini-card">
+              <div class="trend-mini-label">CPA Trend</div>
+              <div class="trend-mini-chart-wrap"><canvas id="miniCpaChart"></canvas></div>
+              <div class="trend-mini-stats">
+                <div>
+                  <div class="trend-mini-value" id="miniCpaValue">—</div>
+                  <div class="trend-mini-proj">2026 est: <span id="miniCpaProj">—</span></div>
+                </div>
+                <div class="trend-mini-change down" id="miniCpaChange">—</div>
+              </div>
+            </div>
+            <div class="trend-mini-card">
+              <div class="trend-mini-label">CVR Trend</div>
+              <div class="trend-mini-chart-wrap"><canvas id="miniCvrChart"></canvas></div>
+              <div class="trend-mini-stats">
+                <div>
+                  <div class="trend-mini-value" id="miniCvrValue">—</div>
+                  <div class="trend-mini-proj">2026 est: <span id="miniCvrProj">—</span></div>
+                </div>
+                <div class="trend-mini-change up" id="miniCvrChange">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Summary cards -->
         <div class="summary-cards">
           <div class="summary-card red">
@@ -971,6 +1137,170 @@
   </div>
 
   <script>
+    // ─── Trend Data (2016-2026) ────────────────────────────────
+    const trendData = {
+      ecommerce: {
+        google: {
+          cpc:  [0.45, 0.52, 0.60, 0.72, 0.80, 0.88, 0.95, 1.05, 1.16, 3.49, 3.90],
+          cpa:  [27, 28.5, 30, 32, 35, 37, 38, 41, 45, 47.94, 53],
+          cvr:  [2.81, 2.90, 3.00, 3.20, 3.40, 3.58, 3.20, 3.50, 4.10, 3.83, 3.75],
+          insight: "<strong>Ecommerce on Google:</strong> CPC surged 676% since 2016 — from $0.45 to $3.49. Your forecast accounts for continued cost inflation projected at +12% in 2026. CVR has held steady, meaning optimizing click quality is your biggest lever."
+        },
+        meta: {
+          cpc:  [0.35, 0.40, 0.45, 0.52, 0.60, 0.72, 0.80, 0.88, 0.94, 0.94, 1.05],
+          cpa:  [18, 20, 22, 25, 28, 32, 34, 36, 38, 38.17, 42],
+          cvr:  [1.20, 1.30, 1.40, 1.55, 1.70, 1.60, 1.65, 1.75, 1.85, 1.57, 1.65],
+          insight: "<strong>Ecommerce on Meta:</strong> iOS 14 caused ROAS to drop from 3.5x to 1.93x — but recovery is underway. CVR dipped in 2025 but Advantage+ Shopping is showing strong recovery signals heading into 2026."
+        }
+      },
+      health: {
+        google: {
+          cpc:  [0.80, 0.95, 1.10, 1.30, 1.50, 1.70, 1.90, 2.20, 2.62, 2.62, 2.95],
+          cpa:  [30, 33, 36, 40, 45, 50, 55, 60, 65, 65, 72],
+          cvr:  [3.36, 3.40, 3.50, 3.60, 3.70, 3.60, 3.50, 3.40, 3.40, 3.40, 3.30],
+          insight: "<strong>Health & Wellness on Google:</strong> CPM inflation hit +24.73% in 2025 — the steepest of any vertical. CPA is approaching $70+ in 2026. Trust signals and HIPAA-compliant landing pages are critical to maintaining CVR."
+        },
+        meta: {
+          cpc:  [0.50, 0.58, 0.65, 0.75, 0.85, 0.95, 1.00, 1.10, 1.20, 1.20, 1.35],
+          cpa:  [28, 32, 36, 42, 48, 55, 60, 64, 68, 68, 75],
+          cvr:  [1.00, 1.05, 1.10, 1.20, 1.30, 1.35, 1.40, 1.45, 1.50, 1.50, 1.55],
+          insight: "<strong>Health & Wellness on Meta:</strong> Policy restrictions limit targeting options, driving CPMs up. CTR recovered strongly in 2025. Build forecasts that account for Q1 and Q4 seasonal spikes — they can shift performance by 20-30%."
+        }
+      },
+      retail: {
+        google: {
+          cpc:  [0.55, 0.62, 0.70, 0.80, 0.90, 0.98, 1.05, 1.15, 1.35, 1.35, 1.55],
+          cpa:  [20, 22, 24, 26, 28, 30, 32, 35, 38, 38, 42],
+          cvr:  [2.50, 2.60, 2.70, 2.90, 3.10, 3.20, 3.30, 3.40, 3.50, 3.50, 3.45],
+          insight: "<strong>Retail on Google:</strong> Shopping campaigns consistently deliver lower CPCs than Search. ROAS has held at 4.2x — strongest of any vertical. Performance Max with strong product feed optimization leads heading into 2026."
+        },
+        meta: {
+          cpc:  [0.40, 0.45, 0.52, 0.58, 0.65, 0.72, 0.78, 0.85, 0.95, 0.70, 0.80],
+          cpa:  [18, 20, 22, 25, 27, 30, 33, 36, 40, 40, 44],
+          cvr:  [1.50, 1.60, 1.70, 1.85, 2.00, 2.10, 2.20, 2.50, 2.80, 3.26, 3.40],
+          insight: "<strong>Retail on Meta:</strong> CPC actually decreased to $0.70 in 2025 — a rare efficiency window. CVR improved from 1.5% to 3.26%, one of the strongest improvement trends across all verticals. Capitalize on Advantage+ Shopping now."
+        }
+      },
+      finance: {
+        google: {
+          cpc:  [1.80, 2.10, 2.50, 2.90, 3.20, 3.50, 3.80, 4.10, 4.22, 4.22, 4.80],
+          cpa:  [40, 45, 52, 60, 68, 75, 80, 88, 95, 95, 108],
+          cvr:  [3.10, 3.20, 3.40, 3.60, 3.80, 4.00, 4.20, 4.60, 5.10, 2.78, 2.90],
+          insight: "<strong>Finance on Google:</strong> CPA is approaching $100+ in 2026 as CPCs hit $4.80+. CVR dropped significantly in 2024 due to economic uncertainty. Lead quality over volume is the mandate — one high-value financial customer justifies $500+ acquisition cost."
+        },
+        meta: {
+          cpc:  [1.20, 1.40, 1.60, 1.80, 2.00, 2.40, 2.80, 3.20, 3.60, 3.77, 4.20],
+          cpa:  [35, 40, 48, 56, 64, 72, 78, 83, 85, 85, 94],
+          cvr:  [4.00, 4.50, 5.00, 5.80, 6.50, 7.20, 7.80, 8.50, 9.00, 9.09, 9.50],
+          insight: "<strong>Finance on Meta:</strong> Highest CVR of any vertical at 9.09% — but CPC has risen 214% since 2016. Facebook Lead Ads consistently outperform link click campaigns by 2-3x. First-party data targeting is essential to manage rising CPC costs."
+        }
+      }
+    };
+
+    // ─── Linear regression ────────────────────────────────────────
+    function linearRegression(data) {
+      const n = data.length;
+      const x = Array.from({length: n}, (_, i) => i);
+      const sumX = x.reduce((a, b) => a + b, 0);
+      const sumY = data.reduce((a, b) => a + b, 0);
+      const sumXY = x.reduce((acc, xi, i) => acc + xi * data[i], 0);
+      const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+      return parseFloat((intercept + slope * n).toFixed(2));
+    }
+
+    // ─── Mini chart instances ──────────────────────────────────────
+    let miniCharts = {};
+
+    function buildMiniChart(id, historicalData, color) {
+      const ctx = document.getElementById(id).getContext('2d');
+      if (miniCharts[id]) miniCharts[id].destroy();
+      const years = ['16','17','18','19','20','21','22','23','24','25','26'];
+      const proj = linearRegression(historicalData.slice(0, 10));
+      const allData = [...historicalData.slice(0, 10), null];
+      const projData = [...Array(9).fill(null), historicalData[9], proj];
+
+      miniCharts[id] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              data: allData,
+              borderColor: color,
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: true,
+              backgroundColor: color + '20',
+              tension: 0.4,
+              spanGaps: false
+            },
+            {
+              data: projData,
+              borderColor: color,
+              borderWidth: 1.5,
+              borderDash: [4, 3],
+              pointRadius: 0,
+              fill: false,
+              tension: 0.4,
+              spanGaps: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { display: false },
+            y: { display: false }
+          },
+          animation: { duration: 600 }
+        }
+      });
+      return proj;
+    }
+
+    function updateTrendContext(vertical, channel) {
+      const td = trendData[vertical] && trendData[vertical][channel] ? trendData[vertical][channel] : null;
+      if (!td) return;
+
+      // Insight text
+      document.getElementById('trendInsightText').innerHTML = td.insight;
+
+      // Mini charts
+      const cpcProj = buildMiniChart('miniCpcChart', td.cpc, '#FF6B4A');
+      const cpaProj = buildMiniChart('miniCpaChart', td.cpa, '#B45309');
+      const cvrProj = buildMiniChart('miniCvrChart', td.cvr, '#1E8A4C');
+
+      // CPC stats
+      const cpc25 = td.cpc[9];
+      const cpcChg = ((cpc25 - td.cpc[0]) / td.cpc[0] * 100).toFixed(0);
+      document.getElementById('miniCpcValue').textContent = '$' + cpc25.toFixed(2);
+      document.getElementById('miniCpcProj').textContent = '$' + cpcProj.toFixed(2);
+      document.getElementById('miniCpcChange').textContent = '+' + cpcChg + '% since \'16';
+      document.getElementById('miniCpcChange').className = 'trend-mini-change down';
+
+      // CPA stats
+      const cpa25 = td.cpa[9];
+      const cpaChg = ((cpa25 - td.cpa[0]) / td.cpa[0] * 100).toFixed(0);
+      document.getElementById('miniCpaValue').textContent = '$' + cpa25.toFixed(0);
+      document.getElementById('miniCpaProj').textContent = '$' + cpaProj.toFixed(0);
+      document.getElementById('miniCpaChange').textContent = '+' + cpaChg + '% since \'16';
+      document.getElementById('miniCpaChange').className = 'trend-mini-change down';
+
+      // CVR stats
+      const cvr25 = td.cvr[9];
+      const cvrFirst = td.cvr[0];
+      const cvrChg = ((cvr25 - cvrFirst) / cvrFirst * 100).toFixed(0);
+      const cvrUp = cvr25 >= cvrFirst;
+      document.getElementById('miniCvrValue').textContent = cvr25.toFixed(1) + '%';
+      document.getElementById('miniCvrProj').textContent = cvrProj.toFixed(1) + '%';
+      document.getElementById('miniCvrChange').textContent = (cvrUp ? '+' : '') + cvrChg + '% since \'16';
+      document.getElementById('miniCvrChange').className = `trend-mini-change ${cvrUp ? 'up' : 'down'}`;
+    }
+
     // ─── Benchmark Data ───────────────────────────────────────────
     const benchmarks = {
       ecommerce: {
@@ -1193,6 +1523,10 @@
         // Show results
         document.getElementById('loadingState').classList.remove('visible');
         document.getElementById('resultsState').classList.add('visible');
+
+        // Update trend context
+        const trendChannel = selectedChannel === 'both' ? 'google' : selectedChannel;
+        updateTrendContext(vertical, trendChannel);
 
       }, 800);
     }
